@@ -3,7 +3,7 @@ import {Button} from "antd";
 
 function Home(props) {
     return (
-       <Button type="primary">22</Button>
+      <div>11</div>
     );
 }
 

@@ -1,0 +1,12 @@
+.logo{
+    height: 64px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.logo span{
+    padding: 10px;
+    color: #ffffff;
+    font-size: 18px;
+    background-color: rgba(256,256,256,.3);
+}
