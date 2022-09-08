@@ -1,4 +1,5 @@
 import IndexRouter from "./router";
+import './App.css'
 
 function App() {
   return (

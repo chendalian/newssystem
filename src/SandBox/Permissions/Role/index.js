@@ -2,7 +2,7 @@ import React from 'react';
 
 function Roles(props) {
     return (
-        <div>Roles</div>
+        <div>角色</div>
     );
 }
 

@@ -1,85 +1,63 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Sider from "antd/es/layout/Sider";
 import {Menu} from "antd";
-import {
-    MenuFoldOutlined,
-    MenuUnfoldOutlined,
-    UploadOutlined,
-    UserOutlined,
-    VideoCameraOutlined,
-} from '@ant-design/icons';
+import {UserOutlined} from '@ant-design/icons';
+
+import {withRouter} from 'react-router-dom';
+
 
 import './index.css'
+import requests from "../../utils/http";
+import {getMenu} from "../../api/home";
 
 const {SubMenu, Item} = Menu
 
 function SideMenu(props) {
     const [collapsed, setCollapsed] = useState(false);
+    const [menuList, setMenuList] = useState([])
 
-    //模拟数组结构
-    const menuList = [
-        {
-            key: "/home",
-            title: "首页",
-            icon: <UserOutlined/>
-        },
-        {
-            key: "/user-manage",
-            title: "用户管理",
-            icon: <UserOutlined/>,
-            children: [
-                {
-                    key: "/user-manage/list",
-                    title: "用户列表",
-                    icon: <UserOutlined/>
-                }
-            ]
-        },
-        {
-            key: "/right-manage",
-            title: "权限管理",
-            icon: <UserOutlined/>,
-            children: [
-                {
-                    key: "/right-manage/role/list",
-                    title: "角色列表",
-                    icon: <UserOutlined/>
-                },
-                {
-                    key: "/right-manage/right/list",
-                    title: "权限列表",
-                    icon: <UserOutlined/>
-                }
-            ]
-        }
-    ]
+
+    useEffect(() => {
+        getMenu().then(resp => {
+            setMenuList(resp)
+        })
+    }, [])
 
     const renderMenu = (menu) => {
-        console.log('m', menu)
-        menu.map(item => {
-            if (item.children) {
+        return menu.map(item => {
+            if (item.pagepermisson && item.children?.length>0) {
                 return <SubMenu key={item.key} icon={item.icon} title={item.title}>
-                    {renderMenu(item)}
+                    {renderMenu(item.children)}
                 </SubMenu>
             }
-            return <Item key={item.key} icon={item.icon} title={item.title}></Item>
+            return item.pagepermisson && <Item key={item.key} icon={item.icon} onClick={() => {
+                console.log('props', props)
+                props.history.push(item.key)
+            }}>{item.title}</Item>
         })
     }
 
+    const selectedKeys=[props.location.pathname]
+    const openKeys=["/"+props.location.pathname.split('/')[1]]
     return (
         <Sider trigger={null} collapsible collapsed={collapsed}>
-            <div className="logo">
-                <span>全球新闻发布系统</span>
-            </div>
-            <Menu
-                theme="dark"
-                mode="inline"
-                defaultSelectedKeys={['1']}
-            >
-                {renderMenu(menuList)}
-            </Menu>
+          <div style={{display:'flex',flexDirection:'column',height:'100%'}}>
+              <div className="logo">
+                  <span>全球新闻发布系统</span>
+              </div>
+              <div style={{flex:1,overflow:"auto"}}>
+                  <Menu
+                      theme="dark"
+                      mode="inline"
+                      defaultSelectedKeys={selectedKeys}
+                      defaultOpenKeys={openKeys}
+                  >
+                      {renderMenu(menuList)}
+                  </Menu>
+              </div>
+          </div>
         </Sider>
     );
 }
 
-export default SideMenu;
+export default withRouter(SideMenu);  //高阶组件 withRouter  传低阶组件  从而让低阶组件拿到props
